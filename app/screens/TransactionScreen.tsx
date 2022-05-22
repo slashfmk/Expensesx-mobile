@@ -1,7 +1,7 @@
 import React, {useState, useEffect, useCallback, useContext} from "react";
 import {View, StyleSheet, StatusBar, SafeAreaView, Platform} from "react-native";
 
-import {AppLoading} from "expo";
+import AppLoading from 'expo-app-loading';
 import useMyFont from "../hooks/useMyFonts";
 import * as constants from '../constants/appConstants';
 import TransactionTabNavigation from "../navigation/TransactionTabNavigation";
@@ -12,7 +12,6 @@ import ActivityIndicator from "../ui/ActivityIndicator";
 import {baseUrlApi} from "../constants/genConstant";
 import {useQuery} from "react-query";
 
-import {TransactionsContext} from "../context/TransactionsContext";
 
 // Screen holding all expenses
 // const getTransactions = async () => {
@@ -34,11 +33,11 @@ const TransactionScreen: React.FC = () => {
 
    // setTransactions(data);
 
-    if (!loadFonts) {
-        return (
-            <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
-        );
-    }
+    // if (!loadFonts) {
+    //     return (
+    //         <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
+    //     );
+    // }
 
     return (
             <View style={style.container}>

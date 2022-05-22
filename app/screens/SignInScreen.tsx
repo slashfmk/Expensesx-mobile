@@ -1,11 +1,11 @@
-import React, {useEffect, useState, useContext} from "react";
+import React, {useEffect, useState} from "react";
 import {
     View,
     StyleSheet,
     StatusBar,
     SafeAreaView,
     ImageBackground,
-    Platform,
+    Platform, ScrollView,
 } from "react-native";
 
 import * as Animatable from 'react-native-animatable';
@@ -23,62 +23,45 @@ import AppText from "../ui/AppText";
 import ActivityIndicator from "../ui/ActivityIndicator";
 import Notification from "../ui/Notification";
 
+import useAuth from "../hooks/useAuth";
+import axios from "../api/axios";
+// import axios from "axios";
 
-import {AuthContext} from "../context/AuthContext";
-import storageToken from '../utility/storage';
-import axios from "axios";
 import {baseUrlApi} from "../constants/genConstant";
 
+interface MyFormValues {
+    email: string;
+    password: string;
+}
 
 const SignInScreen: React.FC<any> = (props) => {
-
-
-    // mutation to geneate a token from the refresh one
-    const tokenMutation = useMutation((data) => axios.post(`${baseUrlApi}/auth/token/`, data), {
-        onSuccess: async (data) => {
-            // console.log(`New access token ${data.data.accessToken}`);
-            // Save the new access token in the device storage
-            await storageToken.saveToken(data.data.accessToken);
-        },
-        onError: async (error, variables) => {
-            // something went wrng
-            console.log(error);
-        }
-    });
+    //@ts-ignore
+    const {auth, setAuth} = useAuth();
 
     // @ts-ignore
-    const {
-        mutateAsync,
-        isError,
-        isLoading,
-        isSuccess,
-        error
-    } = useMutation((data) => axios.post(`${baseUrlApi}/auth/signin/`, data),
-        {
-            onSuccess: async (data, variables, context) => {
-
-                // keep the refresh token
-                let refresh = data.data.refreshToken;
-                // store the refresh token in the app secure storage
-                await storageToken.saveRefreshToken(refresh);
-
-                // Generate a new access token by calling mutateToken
-                //@ts-ignore
-                await tokenMutation.mutate({token: refresh});
-              //  setAuthData(data.data);
+    const {mutateAsync, isError, isLoading, isSuccess, error} =
+        useMutation(async (login: MyFormValues) => {
+                return await axios.post(`/auth/signin/`, login, {
+                    headers: {'Content-Type': 'application/json'},
+                    withCredentials: true
+                })
             },
-            onError: async (error1, variables, context) => {
-                await storageToken.deleteRefreshToken();
-                await storageToken.deleteToken();
-            },
-            onMutate: () => {
-            },
-            onSettled: () => {
-            }
-        });
-
-    //@ts-ignore
-    const {auth, setAuthData} = useContext(AuthContext);
+            {
+                onSuccess: async (data, variables, context) => {
+                    //@ts-ignore
+                    const dt = jwtDecode(data.data);
+                    //@ts-ignore
+                    const accessToken = data.data;
+                  //  console.log(data);
+                    // setAuth({user: dt});
+                },
+                onError: async (error, variables, context) => {
+                    // await storageToken.deleteRefreshToken();
+                    // await storageToken.deleteToken();
+                    //  console.log(error1.response.data);
+                    //   console.log(error);
+                }
+            });
 
     useEffect(() => {
     }, [auth]);
@@ -100,10 +83,10 @@ const SignInScreen: React.FC<any> = (props) => {
 
                 {
                     isError && <Notification type={"danger"}>
-                            {//@ts-ignore
-                             //   error.response.data.message
-                            }
-                        </Notification>
+                        {//@ts-ignore
+                                //  error.response.data.data.message
+                        }
+                    </Notification>
 
                 }
 
@@ -111,9 +94,17 @@ const SignInScreen: React.FC<any> = (props) => {
                 <Formik
                     initialValues={{username: '', password: ''}}
                     onSubmit={async values => {
-                       //  console.log(values);
-                        // @ts-ignore
-                        await mutateAsync({username: values.username, password: values.password});
+                        try {
+                            console.log(values);
+
+                            await mutateAsync({
+                                // @ts-ignore
+                                username: values.username.toString(),
+                                password: values.password.toString()
+                            })
+                        } catch (e) {
+                            console.log(e);
+                        }
                     }}
                     validationSchema={Yup.object().shape({
                         username: Yup.string().required('Required'),
@@ -189,6 +180,7 @@ const SignInScreen: React.FC<any> = (props) => {
                     )}
                 </Formik>
             </SafeAreaView>
+
         </ImageBackground>
     )
 }

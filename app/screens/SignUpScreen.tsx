@@ -12,7 +12,6 @@ import * as Constants from "../constants/appConstants";
 import AppButton from "../ui/AppButton";
 import navConstants from "../constants/navConstants";
 
-import authApi from "../api/authApi";
 import {useMutation} from "react-query";
 import ActivityIndicator from "../ui/ActivityIndicator";
 import AppTextInput from "../ui/AppTextInput";
@@ -20,29 +19,22 @@ import {Formik} from "formik";
 import AppText from "../ui/AppText";
 import * as Animatable from "react-native-animatable";
 import * as Yup from "yup";
-import axios from "axios";
+import axios from "../api/axios";
 import {baseUrlApi} from "../constants/genConstant";
-import storageToken from "../utility/storage";
-import {AuthContext} from "../context/AuthContext";
+import AuthContext from "../context/AuthContext";
 
 
 const SignUpScreen: React.FC = (props: any) => {
 
     // @ts-ignore
-    const {mutateAsync, isLoading, error, isError} = useMutation((data) => axios.post(`${baseUrlApi}/auth/signup/`, data), {
+    const {mutateAsync, isLoading, error, isError} = useMutation(async (data) => await axios.post(`/auth/signup/`, data), {
         onSuccess: async (data, variables, context) => {
-            await storageToken.saveToken(data.data);
-            setAuthData(data.data);
+          //  console.log(data);
         },
         onError: (error1, variables, context) => {
+           // console.log(error1);
         }
     });
-
-    //@ts-ignore
-    const {auth, setAuthData} = useContext(AuthContext);
-
-    useEffect(() => {
-    }, [auth]);
 
 
     return (
@@ -56,33 +48,44 @@ const SignUpScreen: React.FC = (props: any) => {
 
                 {
                     isError ? <AppText style={style.headingRed}>
-                            {error.response.data.message}
+                            {//@ts-ignore
+                              //  error.response.data.message
+                            }
+                            There is an error
                         </AppText> :
                         null
                 }
 
                 <Formik
-                    initialValues={{firstname: '', lastname: '', email: '', password: '', rPassword: '',}}
+                    initialValues={{firstname: '', lastname: '', email: '', password: '', rPassword: '', username: ''}}
                     validationSchema={Yup.object().shape({
                         email: Yup.string().email('Invalid email').required('Required'),
+                        username: Yup.string().required('Required'),
                         password: Yup.string()
                             .required('Required')
                             .matches(new RegExp('(?=.*[a-z])+(?=.*[A-Z])+(?=.*[0-9])+'), 'Must contain at least 1 Capital, lower letter and a digit'),
                         rPassword: Yup.string()
                             .required('Required')
                             .oneOf([Yup.ref('password')], "Passwords don't match"),
-                            firstname: Yup.string().required('Required'),
+                        firstname: Yup.string().required('Required'),
                         lastname: Yup.string().required('Required')
                     })}
                     onSubmit={async values => {
-                        // @ts-ignore
-                        const resp = await mutateAsync({
-                            firstname: values.firstname,
-                            lastname: values.lastname,
-                            email: values.email,
-                            password: values.password,
-                            repeat_password: values.rPassword
-                        });
+
+                        try {
+                            // @ts-ignore
+                            const resp = await mutateAsync({
+                                firstname: values.firstname,
+                                lastname: values.lastname,
+                                email: values.email,
+                                username: values.username,
+                                password: values.password,
+                                repeat_password: values.rPassword
+                            });
+                        } catch (e) {
+                            console.log(e);
+                        }
+
 
                         //
                     }}
@@ -128,6 +131,15 @@ const SignUpScreen: React.FC = (props: any) => {
                             />
                             <AppText style={style.errorInput}>{errors.email}</AppText>
 
+                            <AppTextInput
+                                placeholder={'Username'}
+                                onChangeText={handleChange('username')}
+                                onBlur={handleBlur('username')}
+                                name={"username"}
+                                value={values.username}
+                            />
+                            <AppText style={style.errorInput}>{errors.username}</AppText>
+
                             {/*<View style={style.rowContainer}>*/}
                                 <AppTextInput
                                     placeholder={'Password'}
@@ -159,7 +171,7 @@ const SignUpScreen: React.FC = (props: any) => {
                                 <AppButton
                                     disabled={isLoading}
                                     title={isLoading ? "Signing Up ..." : "Sign Up"}
-                                    onPress={handleSubmit}
+                                    onPress={() => handleSubmit()}
                                 />
                             }
                             <AppText onPress={() => props.navigation.navigate(navConstants.SIGN_IN)}

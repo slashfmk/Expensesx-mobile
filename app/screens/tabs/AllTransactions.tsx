@@ -14,7 +14,6 @@ import useFeedbackEmoji from "../../hooks/useFeedbackEmoji";
 import AppButton from "../../ui/AppButton";
 import AppText from "../../ui/AppText";
 
-import {TransactionsContext} from "../../context/TransactionsContext";
 import {useQuery, QueryObserverResult, useQueryClient, QueryCache} from "react-query";
 
 import transactionsApi from "../../api/transactionsApi";

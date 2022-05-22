@@ -4,7 +4,7 @@ import * as Animatable from 'react-native-animatable';
 
 import {useFocusEffect} from '@react-navigation/native';
 
-import {AppLoading} from "expo";
+//import {AppLoading} from "expo";
 import useMyFont from "../hooks/useMyFonts";
 
 import * as Constants from '../constants/appConstants';
@@ -18,8 +18,6 @@ import AppText from "../ui/AppText";
 //import constantxs from '../constants/genConstant';
 
 import wordHelper from '../utility/wordHelper';
-import {AuthContext} from "../context/AuthContext";
-import storage from "../utility/storage";
 
 
 const uLink: string = "https://images.unsplash.com/photo-1567303314286-6735a4ad9d42?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1603&q=80";
@@ -29,7 +27,6 @@ const uLink: string = "https://images.unsplash.com/photo-1567303314286-6735a4ad9
 const ProfileScreen: React.FC = (props) => {
 
     const [loadFonts, setLoadFonts] = useState<boolean>(false);
-
     //@ts-ignore
     const {auth, setAuthData} = useContext(AuthContext);
 
@@ -37,15 +34,15 @@ const ProfileScreen: React.FC = (props) => {
     }, [auth]);
 
 
-    if (!loadFonts) {
-        return (
-            <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
-        );
-    }
+    // if (!loadFonts) {
+    //     return (
+    //         <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
+    //     );
+    // }
 
     const handleLogout = async () => {
-        setAuthData(null);
-        await storage.deleteToken();
+        // setAuthData(null);
+        // await storage.deleteToken();
     }
 
     // @ts-ignore

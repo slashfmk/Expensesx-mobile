@@ -25,12 +25,10 @@ import moment from "moment";
 import Block from "../ui/Block";
 
 import DateTimePicker from '@react-native-community/datetimepicker';
-import DropDownPicker from 'react-native-dropdown-picker';
 import TileBreakdown from "../ui/TileBreakdown";
 import ActivityIndicator from "../ui/ActivityIndicator";
 // import Icon from 'react-native-vector-icons/Feather';
-
-import {AuthContext} from "../context/AuthContext";
+import AuthContext from "../context/AuthContext";
 import {TransactionsContext} from "../context/TransactionsContext";
 import {useQuery, QueryObserverResult} from "react-query";
 import {CategoryContext} from "../context/CategoryContext";
@@ -57,7 +55,7 @@ const OverviewScreen: React.FC = (props) => {
     const [country, setCountry] = useState("uk");
 
     // @ts-ignore
-    const {auth, setAuthData} = useContext(AuthContext);
+    const {auth, setAuth} = useContext(AuthContext);
 
     // dealing with date
     const onChange = (event: any, selectedDate: any) => {

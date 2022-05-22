@@ -7,6 +7,7 @@ import {
     NativeSyntheticEvent,
     TextInputKeyPressEventData, GestureResponderEvent, TextInputFocusEventData
 } from "react-native";
+
 import * as constants from '../constants/appConstants';
 import AppLoading from 'expo-app-loading';
 import useMyFont from "../hooks/useMyFonts";
@@ -19,15 +20,15 @@ interface AppTextInputProps {
     value?: string | undefined;
     onChange?: ((e: NativeSyntheticEvent<TextInputChangeEventData>) => void) | undefined;
     onChangeText?: ((text: string) => void) | undefined;
-    onBlur?:  ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) | undefined;
+    onBlur?: ((e: NativeSyntheticEvent<TextInputFocusEventData>) => void) | undefined;
     multiline?: boolean | undefined;
     onKeyPress?: ((e: NativeSyntheticEvent<TextInputKeyPressEventData>) => void) | undefined;
-    onTouchEnd?:  ((event: GestureResponderEvent) => void) | undefined
+    onTouchEnd?: ((event: GestureResponderEvent) => void) | undefined
     error?: string | null;
-    enablesReturnKeyAutomatically?:  boolean | undefined;
+    enablesReturnKeyAutomatically?: boolean | undefined;
     secureTextEntry?: boolean;
     name: string;
-   // ref?: string;
+    // ref?: string;
 
 }
 

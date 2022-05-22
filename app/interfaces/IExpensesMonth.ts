@@ -6,5 +6,4 @@ export default interface IExpensesMonth {
     types: string;
     count: number;
     total: number;
-
 }

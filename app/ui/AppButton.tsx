@@ -16,7 +16,7 @@ interface AppButtonProps {
     title: string;
     bgColor?: any | string;
     disabled?: boolean | null;
-    onPress?: (event: GestureResponderEvent) => void | undefined;
+    onPress?: ((event: GestureResponderEvent) => (void | undefined)) | undefined;
 }
 
 const AppButton = (props: AppButtonProps) => {

@@ -10,8 +10,6 @@ import AppTextInput from "../ui/AppTextInput";
 import AppButton from "../ui/AppButton";
 import ActivityIndicator from "../ui/ActivityIndicator";
 import * as Animatable from 'react-native-animatable';
-import {TransactionsContext} from "../context/TransactionsContext";
-import {CategoryContext} from "../context/CategoryContext";
 import {Formik} from "formik";
 import * as Yup from "yup";
 import ConfirmActivityIndicator from "../ui/ConfirmActivityIndicator";
@@ -74,7 +72,7 @@ const UpdateType: React.FC<any> = (props) => {
                 {
                     mutation.isError ?
                         <Notification type={"danger"}>
-                            {mutation.isError ? mutation.error.response.data : ""}
+                            {/*{mutation.isError ? mutation.error.response.data : ""}*/}
                         </Notification>
                         : null
                 }

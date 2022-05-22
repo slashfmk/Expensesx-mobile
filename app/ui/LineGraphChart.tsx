@@ -1,19 +1,14 @@
 import React from "react";
+
 import {LineChart} from "react-native-chart-kit";
 import {Dimensions, View} from "react-native";
 import * as constants from "../constants/appConstants";
+import ILineGraph from "../interfaces/ILineGraph";
 
-interface LineGraphProps {
-    labels: string[];
-    dataSetA: number[];
-    dataSetB?: number[];
-    height: number;
-}
 
-const LineGraphChart = (props: LineGraphProps) => {
+const LineGraphChart = (props: ILineGraph) => {
 
     return (
-
         <LineChart
             data={{
                 labels: props.labels,

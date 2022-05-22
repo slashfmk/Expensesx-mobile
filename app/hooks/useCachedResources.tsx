@@ -1,4 +1,3 @@
-import Reqct from 'react';
 
 import { Ionicons } from '@expo/vector-icons';
 import * as Font from 'expo-font';

@@ -21,37 +21,28 @@
 
 import React from 'react';
 import Main from "./app/screens/Main";
-import { ReactQueryDevtools } from 'react-query/devtools'
+import {ReactQueryDevtools} from 'react-query/devtools'
 
 import {QueryClient, QueryClientProvider} from "react-query";
 
 import {AuthProvider} from "./app/context/AuthContext";
-import {CategoryProvide} from "./app/context/CategoryContext";
-import {TransactionsProvider} from "./app/context/TransactionsContext";
 import useCachedResources from "./app/hooks/useCachedResources";
 
 
 const queryClient = new QueryClient();
 
 export default function App() {
-
     const isLoadingComplete = useCachedResources();
 
-    if(!isLoadingComplete){
+    if (!isLoadingComplete) {
         return null;
     } else {
         return (
             <QueryClientProvider client={queryClient}>
                 <AuthProvider>
-                    <CategoryProvide>
-                        <TransactionsProvider>
-                            <Main/>
-                        </TransactionsProvider>
-                    </CategoryProvide>
+                    <Main/>
                 </AuthProvider>
             </QueryClientProvider>
         );
     }
-
-
 }

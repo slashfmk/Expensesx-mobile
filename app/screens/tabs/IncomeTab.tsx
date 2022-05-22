@@ -17,7 +17,6 @@ import FullBottomButton from "../../ui/FullBottomButton";
 import ActivityIndicator from "../../ui/ActivityIndicator";
 import navConstants from "../../constants/navConstants";
 import FixedButton from "../../ui/FixedButton";
-import {TransactionsContext} from "../../context/TransactionsContext";
 import {useQuery} from "react-query";
 import {baseUrlApi} from "../../constants/genConstant";
 

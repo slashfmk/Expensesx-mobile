@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {View, StyleSheet, StatusBar, SafeAreaView, Platform, FlatList} from "react-native";
 
 import * as constants from '../../constants/appConstants';
@@ -17,30 +17,21 @@ import AppButton from "../../ui/AppButton";
 import ActivityIndicator from "../../ui/ActivityIndicator";
 import navConstants from "../../constants/navConstants";
 import FixedButton from "../../ui/FixedButton";
-import {TransactionsContext} from "../../context/TransactionsContext";
-import axios from "axios";
-import {baseUrlApi} from "../../constants/genConstant";
+import axios, {axiosPrivate} from ".././../api/axios";
 import {useQuery} from "react-query";
 
 
 
-const getTransactions = async () => {
-    try {
-        const response: any = await axios.get(`${baseUrlApi}/transactions/`, {});
-        return response.data;
-    } catch(e){
-        console.log("Error while sending request");
-    }
-}
 
 // Screen holding all expenses
 const ExpenseTab: React.FC = (props: any) => {
 
     //@ts-ignore
-    const {transactions, setTransactions, deleteTransaction, modifyTransaction} = useContext(TransactionsContext);
-  //  const {isSuccess, isLoading, isError, error, data} = useQuery('transactions', () => getTransactions());
+    const {isSuccess, isLoading, isError, error, data} = useQuery('transactions',
+        () => axiosPrivate.get(`/transactions/`));
 
     const [loadedData, setLoadedData] = useState<any []>([]);
+
     const [refresh, setRefresh] = useState<boolean>(false);
 
     const [isSearching, setIsSearching] = useState<boolean>(false);
@@ -54,10 +45,11 @@ const ExpenseTab: React.FC = (props: any) => {
 
     useEffect(() => {
         loadInfo();
-    }, [transactions]);
+    }, []);
 
     const loadInfo = () => {
-        const loadedStuff = transactions.filter((item: any) => item.category === "expenses");
+        //@ts-ignore
+        const loadedStuff = data.data.filter((item: any) => item.category === "expenses");
         setLoadedData(loadedStuff);
     }
 

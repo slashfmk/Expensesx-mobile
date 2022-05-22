@@ -12,10 +12,13 @@ import {QueryObserverResult, useQuery, useQueryClient} from "react-query";
 import typesApi from "../../api/typesApi";
 import PageActivityIndicator from "../../ui/PageActivityIndicator";
 
+import {axiosPrivate} from "../../api/axios";
+
 const ExpenseManager: React.FC<any> = (props) => {
 
     const queryClient = useQueryClient();
-    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery('typeExpenses', () => typesApi.getExpensesTypes());
+    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery('typeExpenses',
+        () => axiosPrivate.get(`/types/`));
 
     const [refresh, setRefresh] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -34,7 +37,9 @@ const ExpenseManager: React.FC<any> = (props) => {
         <View style={style.container}>
 
             <View>
-                <AppText style={style.title}>{data ? data.length : 0} expense types available</AppText>
+                <AppText style={style.title}>{data ?
+                    //@ts-ignore
+                    data.length : 0} expense types available</AppText>
             </View>
 
             <FixedButton
