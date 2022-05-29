@@ -50,6 +50,10 @@ const IncomeTab: React.FC = (props: any) => {
         await queryClient.invalidateQueries('incomes');
         await queryClient.invalidateQueries('expenses');
         await queryClient.invalidateQueries('transactions');
+        // currentMonthTransactions
+        await queryClient.invalidateQueries('weeklySummary');
+        await queryClient.invalidateQueries('monthSummary');
+        await queryClient.invalidateQueries('currentMonthTransactions');
     }
 
     // @ts-ignore
@@ -59,6 +63,22 @@ const IncomeTab: React.FC = (props: any) => {
 
                 <StatusBar translucent barStyle={"light-content"}/>
                 <SafeAreaView style={style.content}>
+
+                    <Animatable.View
+                        animation={"slideInUp"} easing={"ease-in-out-back"}
+                        duration={500}
+                        useNativeDriver={true}
+                        style={[style.rowContainer, {marginVertical: 5}]}
+                    >
+                        <AppText style={style.heading}>{data?.data.length !== null && data?.data.length} transactions | </AppText>
+
+                        <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
+                            <Tag label={"search"}
+                                //@ts-ignore
+                                 icon={<MaterialCommunityIcons name="folder-search" size={18} color={constants.COLORS.lightGray}/>}
+                            />
+                        </View>
+                    </Animatable.View>
 
                     {
                         isLoading ?

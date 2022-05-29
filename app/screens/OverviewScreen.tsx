@@ -100,7 +100,6 @@ const OverviewScreen: React.FC = (props) => {
                             height={70}
                             source={{uri: uLink}}
                         />
-
                     </View>
 
                     <View>
