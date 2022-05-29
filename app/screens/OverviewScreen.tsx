@@ -58,17 +58,6 @@ const OverviewScreen: React.FC = (props) => {
         'weeklySummary',
         () => axiosPrivate.get(`/transactions/this-week-summary`));
 
-    useEffect(() => {
-        // console.log(auth);
-        //@ts-ignore
-        // console.log(currentMonthTransactionList.data.data);
-        //@ts-ignore
-        // console.log(monthSummary.data.data);
-        //@ts-ignore
-        // console.warn(weeklySummary.data.data);
-    }, [])
-
-
     const uLink: string = "https://images.unsplash.com/photo-1567303314286-6735a4ad9d42?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1603&q=80";
 
     const [date, setDate] = useState(new Date(1598051730000));
@@ -101,8 +90,7 @@ const OverviewScreen: React.FC = (props) => {
                 <View style={style.rowContainer}>
 
                     <View style={{width: 70, height: 70}}>
-                        <Image
-                            style={{
+                        <Image style={{
                                 borderRadius: 35,
                                 height: 70,
                                 borderWidth: 2,
@@ -208,15 +196,14 @@ const OverviewScreen: React.FC = (props) => {
                             {/*    Chart starts*/}
 
                             {weeklySummary.isLoading ? <AppText>Loading chart ...</AppText>:
-                                // <LineGraphChart
-                                //     labels={["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]}
-                                //     //@ts-ignore
-                                //     dataSetA={functions.weekGraphData(weeklySummary.data.data).incomes}
-                                //     //@ts-ignore
-                                //     dataSetB={functions.weekGraphData(weeklySummary.data.data).expenses}
-                                //     height={240}
-                                // />
-                                <AppText>Loaded</AppText>
+                                <LineGraphChart
+                                    labels={["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]}
+                                    //@ts-ignore
+                                    dataSetA={functions.weekGraphData(weeklySummary.data.data).incomes}
+                                    //@ts-ignore
+                                    dataSetB={functions.weekGraphData(weeklySummary.data.data).expenses}
+                                    height={240}
+                                />
                             }
 
 

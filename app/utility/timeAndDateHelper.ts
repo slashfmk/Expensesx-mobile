@@ -1,6 +1,6 @@
 import moment from "moment";
 
-const convertTime = (apiTime: any) => {
+function convertTime (apiTime: any) {
     const chunked = apiTime.split(":");
 
     const date = new Date();

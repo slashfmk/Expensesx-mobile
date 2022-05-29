@@ -15,6 +15,8 @@ import navConstants from "../constants/navConstants";
 import AppButton from "../ui/AppButton";
 import AppText from "../ui/AppText";
 
+import AuthContext from "../context/AuthContext";
+
 //import constantxs from '../constants/genConstant';
 
 import wordHelper from '../utility/wordHelper';
@@ -65,8 +67,8 @@ const ProfileScreen: React.FC = (props) => {
                         useNativeDriver
                     >
                         <AppText style={style.heading}>
-                            {auth && wordHelper.AllFirstLetterToUpperCase(auth.firstName)}
-                            {auth && wordHelper.AllFirstLetterToUpperCase(auth.lastName)}
+                            {auth && wordHelper.AllFirstLetterToUpperCase(auth.user.firstname)}
+                            {auth && wordHelper.AllFirstLetterToUpperCase(auth.user.lastname)}
                         </AppText>
 
                     </Animatable.View>
@@ -91,9 +93,9 @@ const ProfileScreen: React.FC = (props) => {
                         delay={100} useNativeDriver
                     >
                         <Block title={"Personal"} bgColor={"rgba(0,0,0,.4)"}>
-                            <ListItem title={"Email"} subTitle={auth && auth.email}/>
-                            <ListItem title={"Role"} subTitle={auth && auth.role}/>
-                            <ListItem title={"Status"} subTitle={auth.status ? "Active" : "Inactive"}/>
+                            <ListItem title={"Email"} subTitle={auth && auth.user.email}/>
+                            <ListItem title={"Role"} subTitle={auth && auth.user.role}/>
+                            <ListItem title={"Status"} subTitle={auth.user.status ? "Active" : "Inactive"}/>
                         </Block>
                     </Animatable.View>
 

@@ -17,189 +17,112 @@ import FullBottomButton from "../../ui/FullBottomButton";
 import ActivityIndicator from "../../ui/ActivityIndicator";
 import navConstants from "../../constants/navConstants";
 import FixedButton from "../../ui/FixedButton";
-import {useQuery} from "react-query";
+import {useQuery, useQueryClient} from "react-query";
 import {baseUrlApi} from "../../constants/genConstant";
 
 import axios from 'axios';
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import PageActivityIndicator from "../../ui/PageActivityIndicator";
 
 
 // Screen holding all expenses
 const IncomeTab: React.FC = (props: any) => {
 
-    //@ts-ignore
-    const {transactions, setTransactions, deleteTransaction, modifyTransaction} = useContext(TransactionsContext);
-
-    const [loadedData, setLoadedData] = useState<any []>([]);
+    const queryClient = useQueryClient();
+    const axiosPrivate = useAxiosPrivate();
     const [refresh, setRefresh] = useState<boolean>(false);
+    //@ts-ignore
 
-    const [isSearching, setIsSearching] = useState<boolean>(false);
-    const [isAdding, setIsAdding] = useState<boolean>(false);
+    const {isSuccess, isLoading, isError, error, data} = useQuery(
+        'incomes',
+        async () => await axiosPrivate.get(`/transactions/incomes/`),
+        {
+            onSuccess(data) {
+                console.log(data);
+            },
+            onError(error) {
+                console.log(error);
+            }
+        }
+    );
 
-    const [sTitle, setSTitle] = useState("");
-
-
-    useEffect(() => {
-        loadInfo();
-    }, []);
-
-    useEffect(() => {
-        loadInfo();
-    }, [transactions]);
-
-    const loadInfo = (): void => {
-        setLoadedData(transactions.filter((item: any) => item.category === "incomes"));
+    const refreshing = async () => {
+        await queryClient.invalidateQueries('incomes');
+        await queryClient.invalidateQueries('expenses');
+        await queryClient.invalidateQueries('transactions');
     }
 
-    const handleSearch = (title: string): void => {
-        const exp = new RegExp(title, 'i');
-
-        const stf: any[] = transactions.filter(
-            (item: any) => (item.comment.match(exp) || item.title.match(exp)) && item.category === "incomes");
-        setLoadedData(stf);
-    }
-
-    const handleSTitle = (value: string): void => {
-        setSTitle(value);
-        handleSearch(value);
-    }
-
-    const handleCloseSearch = (): void => {
-        setSTitle("");
-        setIsSearching(false);
-        loadInfo();
-    }
-
-    // for handling
     // @ts-ignore
     return (
-        <View style={style.container}>
+        <>
+            <View style={style.container}>
 
-            <StatusBar translucent barStyle={"light-content"}/>
-            <SafeAreaView style={style.content}>
+                <StatusBar translucent barStyle={"light-content"}/>
+                <SafeAreaView style={style.content}>
 
-                {/*<FullBottomButton*/}
-                {/*    title={"Add income"}*/}
-                {/*    onPress={() => props.navigation.navigate(navConstants.ADDTRANSACTION,*/}
-                {/*        {item: {"type": "incomes"}})}*/}
-                {/*/>*/}
+                    {
+                        isLoading ?
+                            //@ts-ignore
+                            // <View style={{alignItems: "center", justifyContent: "center"}}>
+                            //     <ActivityIndicator visible={true} />
+                            // </View>
+                            <PageActivityIndicator visible={isLoading} />
+                            :
+                            data?.data.length > 0 ?
+                                <FlatList
+                                    // data={loadedData}
+                                    data={data?.data}
+                                    renderItem={({item}) =>
+                                        <PreviewItem
+                                            key={item.transaction_id}
+                                            id={item.transaction_id}
+                                            title={item.title}
+                                            amount={item.amount}
+                                            time={item.created_time}
+                                            category={item.category}
+                                            type={item.type}
+                                            satisfaction={item.satisfaction}
+                                            date={item.created_date}
+                                            comment={item.comment}
+                                        />
+                                    }
+                                    refreshing={refresh}
+                                    onRefresh={refreshing}
+                                    keyExtractor={(item) => item.transaction_id}
+                                /> :
+                                <View style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: constants.COLORS.greenDark,
+                                    padding: 10,
+                                    marginBottom: 4
+                                }}>
+                                    <Animatable.View animation={"fadeInUp"} easing={"ease-in"} useNativeDriver>
+                                        {useFeedbackEmoji("bad", 100)}
+                                    </Animatable.View>
+                                    <Animatable.View style={{marginTop: 10}}
+                                                     animation={"fadeInUp"}
+                                                     easing={"ease-in"}
+                                                     delay={200}
+                                                     useNativeDriver={true}
+                                    >
+                                        <AppText style={style.heading}>There is nothing to show</AppText>
+                                    </Animatable.View>
 
-                <FixedButton
-                    title={"plus"}
-                    onPress={() => props.navigation.navigate(navConstants.ADDTRANSACTION,
-                        {item: {"type": "incomes"}})}
-                />
+                                    {/*<ActivityIndicator visible={true}/>*/}
 
-                {
-                    isSearching ?
-
-                        <Animatable.View
-                            animation={"slideInDown"} easing={"ease-in-out-back"}
-                            useNativeDriver={true}
-                            style={{
-                                width: "100%",
-                                backgroundColor: constants.COLORS.greenDark,
-                                padding: 10,
-                                marginBottom: 4,
-                                alignItems: "center"
-                            }}>
-                            <AppText style={style.heading}>Let's find it! ({loadedData.length})</AppText>
-                            <View style={style.rowContainer}>
-
-                                <AppTextInput name={"searchInput"} value={sTitle} onChangeText={handleSTitle}
-                                              placeholder={"Searching for ..."}/>
-
-                            </View>
-
-                            <AntDesign name="closecircle" size={28} color={constants.COLORS.lightGray}
-                                       onPress={() => handleCloseSearch()}/>
-                        </Animatable.View>
-                        : (
-                            <Animatable.View
-                                animation={"slideInUp"} easing={"ease-in-out-back"}
-                                duration={500}
-                                useNativeDriver={true}
-                                style={[style.rowContainer, {marginVertical: 5}]}
-                            >
-                                <AppText style={style.heading}>{loadedData.length} transactions | </AppText>
-
-                                <View style={{flexDirection: "row", justifyContent: "center", alignItems: "center"}}>
-
-                                    <Tag label={"search"} onPress={() => setIsSearching(true)}
-                                        //@ts-ignore
-                                         icon={<MaterialCommunityIcons name="folder-search" size={18}
-                                                                       color={constants.COLORS.lightGray}/>}
-                                    />
                                 </View>
-                            </Animatable.View>
-                        )
-                }
 
 
-                {
-                    // allIncomes.loading ?
-                    //     <View style={{alignItems: "center", justifyContent: "center"}}>
-                    //         <ActivityIndicator visible={true}/>
-                    //     </View>
-                    //     :
-                    loadedData.length > 0 ?
-                        <FlatList
-                            data={loadedData}
-                            renderItem={({item}) =>
-                                <PreviewItem
-                                    key={item.transaction_id}
-                                    id={item.transaction_id}
-                                    title={item.title}
-                                    amount={item.amount}
-                                    time={item.created_time}
-                                    category={item.category}
-                                    type={item.type}
-                                    satisfaction={item.satisfaction}
-                                    date={item.created_date}
-                                    comment={item.comment}
-                                />
-                            }
-                            refreshing={refresh}
-                            onRefresh={() => console.log("refreshing ...")}
-                            keyExtractor={(item) => item.transaction_id}
-                        /> :
-                        <View style={{
-                            width: "100%",
-                            height: "100%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: constants.COLORS.greenDark,
-                            padding: 10,
-                            marginBottom: 4
-                        }}>
-                            <Animatable.View animation={"fadeInUp"} easing={"ease-in"} useNativeDriver>
-                                {useFeedbackEmoji("bad", 100)}
-                            </Animatable.View>
-                            <Animatable.View style={{marginTop: 10}}
-                                             animation={"fadeInUp"}
-                                             easing={"ease-in"}
-                                             delay={200}
-                                             useNativeDriver={true}
-                            >
-                                <AppText style={style.heading}>There is nothing to show</AppText>
-                            </Animatable.View>
 
-                        </View>
+                    }
 
-                }
+                </SafeAreaView>
+            </View>
+        </>
 
-            </SafeAreaView>
-
-            {/*Modal for adding income*/}
-            {/*<AppModal title={"Add Income"} width={"100%"} height={"100%"} visible={isAdding}>*/}
-            {/*    <View style={{justifyContent: "center", alignItems: "center"}}>*/}
-            {/*        <AppTextInput name={''} placeholder={"Title"}/>*/}
-            {/*        <AppTextInput placeholder={"Comment"}/>*/}
-            {/*        <AppTextInput placeholder={"How satisfied are you??"}/>*/}
-            {/*        <AppButton title={"Save"} onPress={() => setIsAdding(false)}/>*/}
-            {/*    </View>*/}
-            {/*</AppModal>*/}
-
-        </View>
     );
 }
 

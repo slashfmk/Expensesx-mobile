@@ -12,13 +12,16 @@ import {QueryObserverResult, useQuery, useQueryClient} from "react-query";
 import typesApi from "../../api/typesApi";
 import PageActivityIndicator from "../../ui/PageActivityIndicator";
 
-import {axiosPrivate} from "../../api/axios";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const ExpenseManager: React.FC<any> = (props) => {
 
     const queryClient = useQueryClient();
-    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery('typeExpenses',
-        () => axiosPrivate.get(`/types/`));
+    const axiosPrivate = useAxiosPrivate();
+
+    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery(
+        'typeExpenses',
+        () => axiosPrivate.get(`/type/expenses`));
 
     const [refresh, setRefresh] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -30,7 +33,6 @@ const ExpenseManager: React.FC<any> = (props) => {
 
     const refreshContent = async () => {
         await queryClient.invalidateQueries('typeExpenses');
-        console.log("Content has been refreshed!!!");
     }
 
     return (
@@ -39,7 +41,7 @@ const ExpenseManager: React.FC<any> = (props) => {
             <View>
                 <AppText style={style.title}>{data ?
                     //@ts-ignore
-                    data.length : 0} expense types available</AppText>
+                    data?.data.length : 0} expense types available</AppText>
             </View>
 
             <FixedButton
@@ -50,7 +52,7 @@ const ExpenseManager: React.FC<any> = (props) => {
             {
                 isLoading || isFetching ? <PageActivityIndicator visible={isLoading || isFetching}/> :
                     <FlatList style={{width: "100%"}}
-                              data={data}
+                              data={data?.data}
                               renderItem={
                                   ({item}) => <CategoryItem
                                       id={item.type_id}

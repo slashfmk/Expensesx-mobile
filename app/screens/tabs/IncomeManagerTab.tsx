@@ -12,11 +12,18 @@ import {QueryObserverResult, useQuery, QueryClient, useQueryClient} from "react-
 import typesApi from "../../api/typesApi";
 import FixedButton from "../../ui/FixedButton";
 import PageActivityIndicator from "../../ui/PageActivityIndicator";
+import axios from "axios";
+import {baseUrlApi} from "../../constants/genConstant";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const IncomeManager: React.FC<any> = (props) => {
 
     const queryClient = useQueryClient();
-    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery('typeIncomes', () => typesApi.getIncomeTypes());
+    const axiosPrivate = useAxiosPrivate();
+
+    const {isLoading, isError, isFetching, data}: QueryObserverResult = useQuery(
+        'typeIncomes',
+        () => axiosPrivate.get(`/type/incomes`));
 
     const [refresh, setRefresh] = useState<boolean>(false);
     const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
@@ -28,15 +35,15 @@ const IncomeManager: React.FC<any> = (props) => {
 
     const refreshContent = async () => {
         await queryClient.invalidateQueries('typeIncomes');
-        console.log("Content has been refreshed!!!");
     }
-
 
     return (
         <View style={style.container}>
 
             <View>
-                <AppText style={style.title}>{data ? data.length : 0} income types available</AppText>
+                <AppText style={style.title}>{data ?
+                    //@ts-ignore
+                    data?.data.length : 0} income types available</AppText>
             </View>
 
             <FixedButton
@@ -47,7 +54,7 @@ const IncomeManager: React.FC<any> = (props) => {
             {
                  isLoading || isFetching ? <PageActivityIndicator visible={isLoading || isFetching}/> :
                     <FlatList style={{width: "100%"}}
-                              data={data}
+                              data={data?.data}
                               renderItem={
                                   ({item}) => <CategoryItem
                                       id={item.type_id}

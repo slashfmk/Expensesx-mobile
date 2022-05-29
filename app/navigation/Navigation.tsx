@@ -41,6 +41,7 @@ const Navigation: React.FC = () => {
                 tabBarActiveTintColor: constants.COLORS.primary,
                 tabBarAllowFontScaling: true,
                 tabBarInactiveTintColor: constants.COLORS.lightGray,
+                headerShown: false,
                // tabBarSafeAreaInsets: {bottom: 0},
                 tabBarStyle: {
                     borderTopWidth: 0,
@@ -52,7 +53,7 @@ const Navigation: React.FC = () => {
                     name={navConstants.navBar.OVERVIEW}
                     component={OverviewScreen}
                     options={{
-                        tabBarLabel: 'Overview',
+                         tabBarLabel: 'Overview',
                         tabBarIcon: ({ color, size }) => (
                             <Octicons name="home" size={size} color={color} />
                         )

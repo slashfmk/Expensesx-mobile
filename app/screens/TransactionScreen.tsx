@@ -12,32 +12,9 @@ import ActivityIndicator from "../ui/ActivityIndicator";
 import {baseUrlApi} from "../constants/genConstant";
 import {useQuery} from "react-query";
 
-
-// Screen holding all expenses
-// const getTransactions = async () => {
-//     try {
-//         const response: any = await axios.get(`${baseUrlApi}/transactions/`, {});
-//         return response.data;
-//     } catch(e){
-//         console.log("Error while sending request");
-//     }
-// }
-
 const TransactionScreen: React.FC = () => {
 
     const [loadFonts, setLoadFonts] = useState<boolean>(false);
-
-    //@ts-ignore
-    // const {transactions, setTransactions, deleteTransaction, modifyTransaction} = useContext(TransactionsContext);
-    // const {isSuccess, isLoading, isError, error, data} = useQuery('transactions', () => getTransactions());
-
-   // setTransactions(data);
-
-    // if (!loadFonts) {
-    //     return (
-    //         <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
-    //     );
-    // }
 
     return (
             <View style={style.container}>

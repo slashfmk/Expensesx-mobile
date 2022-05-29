@@ -21,7 +21,6 @@ import AppText from "./AppText";
 import AppSwipeableActions from "./AppSwipeableActions";
 import wordHelper from "../utility/wordHelper";
 import moment from "moment";
-import luxon, {DateTime} from 'luxon';
 
 import {useMutation, useQueries, QueryClient, useQueryClient} from "react-query";
 import axios from "axios";
@@ -53,6 +52,8 @@ const PreviewItem = (props: PreviewItemProps) => {
     const {mutateAsync, isError, isLoading, isSuccess} = useMutation((data) => axios.delete(`${baseUrlApi}/transactions/${data}`), {
             onSuccess: async (data, variables, context) => {
                 await queryClient.invalidateQueries('transactions');
+                await queryClient.invalidateQueries('incomes');
+                await queryClient.invalidateQueries('expenses');
                 await queryClient.invalidateQueries('monthSummary');
                 await queryClient.invalidateQueries('weeklySummary');
 
@@ -181,7 +182,7 @@ const PreviewItem = (props: PreviewItemProps) => {
                         <AppText style={style.modalTitle}> {moment(props.date).format("MMMM Do YYYY")}</AppText>
                         <AppText style={style.modalTitle}> | </AppText>
                         <AntDesign name="clockcircleo" size={18} color={constant.COLORS.lightGray}/>
-                        <AppText style={style.modalTitle}> {timeAndDateHelper.convertTime(props.time)}</AppText>
+                        {/*<AppText style={style.modalTitle}> {timeAndDateHelper.convertTime(props.time)}</AppText>*/}
                     </View>
 
                     <View style={style.satisfaction}>
