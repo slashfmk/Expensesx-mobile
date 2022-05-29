@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -8,7 +8,6 @@ import {
     ScrollView,
     Platform
 } from "react-native";
-
 
 import {useFocusEffect} from '@react-navigation/native';
 
@@ -29,22 +28,45 @@ import TileBreakdown from "../ui/TileBreakdown";
 import ActivityIndicator from "../ui/ActivityIndicator";
 // import Icon from 'react-native-vector-icons/Feather';
 import AuthContext from "../context/AuthContext";
-import {TransactionsContext} from "../context/TransactionsContext";
 import {useQuery, QueryObserverResult} from "react-query";
-import {CategoryContext} from "../context/CategoryContext";
 import transactionsApi from "../api/transactionsApi";
 
 import functions from "../utility/functions";
 import AppModal from "../ui/AppModal";
 import PageActivityIndicator from "../ui/PageActivityIndicator";
 import ITransaction from "../interfaces/ITransaction";
+import {axiosPrivate} from "../api/axios";
+
+ import useAxiosPrivate from "../hooks/useAxiosPrivate";
+
+
 
 // Overview page
 const OverviewScreen: React.FC = (props) => {
 
-    const currentMonthTransactionList: QueryObserverResult = useQuery('currentMonthTransactions', () => transactionsApi.getCurrentMonthTransactions());
-    const monthSummary: QueryObserverResult = useQuery('monthSummary', () => transactionsApi.getMonthSummary());
-    const weeklySummary: QueryObserverResult = useQuery('weeklySummary', () => transactionsApi.getWeekSummary());
+    const axiosPrivate = useAxiosPrivate();
+
+    const currentMonthTransactionList: QueryObserverResult = useQuery(
+        'currentMonthTransactions',
+        () => axiosPrivate.get(`/transactions/current-month-transactions`));
+
+    const monthSummary: QueryObserverResult = useQuery(
+        'monthSummary',
+        () => axiosPrivate.get(`/transactions/month-summary`));
+
+    const weeklySummary: QueryObserverResult = useQuery(
+        'weeklySummary',
+        () => axiosPrivate.get(`/transactions/this-week-summary`));
+
+    useEffect(() => {
+        // console.log(auth);
+        //@ts-ignore
+        // console.log(currentMonthTransactionList.data.data);
+        //@ts-ignore
+        // console.log(monthSummary.data.data);
+        //@ts-ignore
+        // console.warn(weeklySummary.data.data);
+    }, [])
 
 
     const uLink: string = "https://images.unsplash.com/photo-1567303314286-6735a4ad9d42?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1603&q=80";
@@ -66,7 +88,7 @@ const OverviewScreen: React.FC = (props) => {
 
     const bulkingResult = () => {
         //@ts-ignore
-        return functions.bulkTotals(currentMonthTransactionList.data);
+        return functions.bulkTotals(currentMonthTransactionList.data.data);
     }
 
 
@@ -95,7 +117,7 @@ const OverviewScreen: React.FC = (props) => {
 
                     <View>
                         {show && (
-                            <AppText>Morning</AppText>
+                            <AppText>Morning {auth.firstname}</AppText>
                         )}
 
                     </View>
@@ -128,7 +150,6 @@ const OverviewScreen: React.FC = (props) => {
                 <SafeAreaView>
 
                     <View>
-
 
                         {
                             currentMonthTransactionList.isLoading ? <AppText>Loading ...</AppText>:
@@ -187,14 +208,15 @@ const OverviewScreen: React.FC = (props) => {
                             {/*    Chart starts*/}
 
                             {weeklySummary.isLoading ? <AppText>Loading chart ...</AppText>:
-                                <LineGraphChart
-                                    labels={["Mon", "Tues", "Wed", "thur", "Fri", "Sat", "Sun"]}
-                                    //@ts-ignore
-                                    dataSetA={functions.weekGraphData(weeklySummary.data).incomes}
-                                    //@ts-ignore
-                                    dataSetB={functions.weekGraphData(weeklySummary.data).expenses}
-                                    height={240}
-                                />
+                                // <LineGraphChart
+                                //     labels={["Mon", "Tues", "Wed", "Thur", "Fri", "Sat", "Sun"]}
+                                //     //@ts-ignore
+                                //     dataSetA={functions.weekGraphData(weeklySummary.data.data).incomes}
+                                //     //@ts-ignore
+                                //     dataSetB={functions.weekGraphData(weeklySummary.data.data).expenses}
+                                //     height={240}
+                                // />
+                                <AppText>Loaded</AppText>
                             }
 
 
@@ -215,31 +237,28 @@ const OverviewScreen: React.FC = (props) => {
                                     monthSummary.isLoading ?
                                         <AppText>Loading...</AppText> : (
                                             //@ts-ignore
-                                             functions.sortExpenses(monthSummary.data).map(item => <TileBreakdown
-                                                 title={item.title}
-                                                 amount={item.total}
-                                                 times ={item.count}
-                                                 key={`${item.total}`}
-                                             />
+                                            functions.sortExpenses(monthSummary.data.data).map(item => <TileBreakdown
+                                                    title={item.title}
+                                                    amount={item.total}
+                                                    times ={item.count}
+                                                    key={`${item.total}`}
+                                                />
                                             )
                                         )
                                 }
 
                             </View>
-
-
                         </Block>
-
                     </View>
 
                 </SafeAreaView>
             </ScrollView>
 
-                <PageActivityIndicator
-                    visible={currentMonthTransactionList.isLoading
+            <PageActivityIndicator
+                visible={currentMonthTransactionList.isLoading
                     || weeklySummary.isLoading
                     || monthSummary.isLoading}
-                />
+            />
 
 
             {/*<AppModal title={"Pick a date"} height={50} visible={false}>*/}
@@ -254,6 +273,7 @@ const OverviewScreen: React.FC = (props) => {
             {/*</AppModal>*/}
 
         </>
+
     );
 }
 

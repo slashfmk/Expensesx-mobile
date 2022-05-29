@@ -6,5 +6,5 @@ export default interface IAuth {
     username: string;
     role: string;
     status: boolean;
-    token: string | undefined;
+    profile_pic?: string;
 }

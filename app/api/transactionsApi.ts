@@ -1,29 +1,28 @@
-import axios from "axios";
-import {baseUrlApi} from "../constants/genConstant";
+import {axiosPrivate} from "./axios";
 
 const getTransactions = async () => {
-        const response = await axios.get(`${baseUrlApi}/transactions/`, {});
+        const response = await axiosPrivate.get(`/transactions/`, {});
         return response.data;
 }
 
 // current-month-transactions
 const getCurrentMonthTransactions = async () => {
-        const response = await axios.get(`${baseUrlApi}/transactions/current-month-transactions`, {});
+        const response = await axiosPrivate.get(`/transactions/current-month-transactions`, {});
         return response.data;
 }
 
 const getWeekSummary = async () => {
-        const response = await axios.get(`${baseUrlApi}/transactions/this-week-summary`, {});
+        const response = await axiosPrivate.get(`/transactions/this-week-summary`, {});
         return response.data;
 }
 
 const getMonthSummary = async () => {
-        const response = await axios.get(`${baseUrlApi}/transactions/month-summary`, {});
+        const response = await axiosPrivate.get(`/transactions/month-summary`, {});
         return response.data;
 }
 
 const deleteTransaction = async (id: string) => {
-        const response = await axios.delete(`${baseUrlApi}/transactions/${id}`, {});
+        const response = await axiosPrivate.delete(`/transactions/${id}`, {});
         return response.data;
 }
 
@@ -35,7 +34,7 @@ const addTransaction = async (
     comment?: string
 ) => {
     // try {
-        const response = await axios.post(`${baseUrlApi}/transactions/`, {
+        const response = await axiosPrivate.post(`/transactions/`, {
             title, amount, type, satisfaction, comment
         });
         return response.data;

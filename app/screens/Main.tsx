@@ -1,53 +1,56 @@
 import React, {useEffect, useState, useContext} from 'react';
 
-import jwtDecode from "jwt-decode";
-
 import storage from "../utility/storage";
 import AuthNavigation from "../navigation/AuthNavigation";
 import MainNavigation from "../navigation/MainNavigator";
-import axios from "../api/axios";
+import useRefreshToken from "../hooks/useRefreshToken";
 
-import {useMutation} from "react-query";
+import useIsLoggedIn from "../hooks/useIsLoggedIn";
+
 import useAuth from "../hooks/useAuth";
+import IsLoggedInContext from "../context/IsLoggedInContext";
 
 const Main: React.FC<any> = (props) => {
 
     //@ts-ignore
-    const {auth, setAuthData} = useAuth;
+    const {auth} = useAuth;
+    const refresh = useRefreshToken;
+    //@ts-ignore
+    const {isLoggedIn, setIsLoggedIn} = useContext(IsLoggedInContext);
+
+    // const checkToken = async () => {
+    //     try {
+    //         //@ts-ignore
+    //         const refreshToken = await storage.getRefreshToken();
+    //
+    //         if (refreshToken) {
+    //             await refresh;
+    //         }
+    //     } catch (e) {
+    //         console.log(e);
+    //     }
+    // }
 
     useEffect(() => {
-    }, [auth]);
 
-    // mutation to generate a token from the refresh one
-    //@ts-ignore
-    const tokenMutation = useMutation((data) => axios.delete(`/auth/logout/`, data), {
-        onSuccess: async (data) => {
-            console.log('Log out successfully');
-            await storage.deleteToken();
-            await storage.deleteRefreshToken();
-            setAuthData(null);
-        },
-        onError: async (error, variables) => {
-            await storage.deleteToken();
-            await storage.deleteRefreshToken();
-            setAuthData(null);
-        }
-    });
+        const startLogin = async () => {
+            const refreshToken = await storage.getRefreshToken();
 
-    const getTkn = async () => {
-        try {
-            //  const foundToken = await authToken.getToken();
-
-            //@ts-ignore
-            const token = await storage.getToken();
+            if (refreshToken) {
+                console.log(`Refresh token goes here: ${refreshToken}`);
+                await refresh();
+                setIsLoggedIn(true);
+               // console.log(auth.accessToken);
+            }}
+        startLogin();
+        }, []);
 
 
-        } catch (e) {
-            console.log(e.message);
-        }
+        // useEffect(() => {
+        //    // console.log(auth);
+        // }, [isLoggedIn]);
+
+        return (isLoggedIn ? <MainNavigation/> : <AuthNavigation/>);
     }
 
-    return (!auth ? <AuthNavigation/> : <MainNavigation/>);
-}
-
-export default Main;
+    export default Main;

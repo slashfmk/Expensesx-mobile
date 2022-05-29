@@ -22,10 +22,9 @@
 import React from 'react';
 import Main from "./app/screens/Main";
 import {ReactQueryDevtools} from 'react-query/devtools'
-
 import {QueryClient, QueryClientProvider} from "react-query";
-
 import {AuthProvider} from "./app/context/AuthContext";
+import {IsLoggedInProvider} from "./app/context/IsLoggedInContext";
 import useCachedResources from "./app/hooks/useCachedResources";
 
 
@@ -39,9 +38,11 @@ export default function App() {
     } else {
         return (
             <QueryClientProvider client={queryClient}>
-                <AuthProvider>
-                    <Main/>
-                </AuthProvider>
+                <IsLoggedInProvider>
+                    <AuthProvider>
+                        <Main/>
+                    </AuthProvider>
+                </IsLoggedInProvider>
             </QueryClientProvider>
         );
     }

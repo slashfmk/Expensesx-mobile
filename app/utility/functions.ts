@@ -16,6 +16,14 @@ const bulkTotals = (transactions: ITransaction[]) => {
         }
     });
 
+    // for(let i: number = 0; i < transactions.length; i++) {
+    //     if (transactions[i].category === "incomes") {
+    //         totalIncome += Number(transactions[i].amount);
+    //     } else {
+    //         totalExpenses += Number(transactions[i].amount);
+    //     }
+    // }
+
     balance = totalIncome - totalExpenses;
 
     totalExpenses.toFixed(2);
@@ -90,5 +98,9 @@ const weekGraphData = (data: IWeeklyReportItem[]) => {
 const sortExpenses = (data: IExpensesMonth[]): IExpensesMonth[] => {
     return data.filter(item => item.types === "expenses");
 }
+
+// const sortExpenses = (data: any) => {
+//     return data.filter((item: any) => item.types === "expenses");
+// }
 
 export default ({sortExpenses, weekGraphData, bulkTotals});

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     View,
     StyleSheet,
@@ -13,7 +13,6 @@ import {useMutation, useQuery} from "react-query";
 import {Formik} from "formik";
 import * as Yup from 'yup';
 
-
 import * as Constants from "../constants/appConstants";
 import navConstants from "../constants/navConstants";
 
@@ -25,46 +24,41 @@ import Notification from "../ui/Notification";
 
 import useAuth from "../hooks/useAuth";
 import axios from "../api/axios";
-// import axios from "axios";
 
-import {baseUrlApi} from "../constants/genConstant";
-
-interface MyFormValues {
-    email: string;
-    password: string;
-}
+import ISignInForm from "../interfaces/ISignInForm";
+import storage from "../utility/storage";
+import useRefreshToken from "../hooks/useRefreshToken";
+import IsLoggedInContext from "../context/IsLoggedInContext";
+import AuthContext from "../context/AuthContext";
 
 const SignInScreen: React.FC<any> = (props) => {
     //@ts-ignore
-    const {auth, setAuth} = useAuth();
+    const {auth, setAuth} = useContext(AuthContext);
+    const refresh = useRefreshToken();
+    //@ts-ignore
+    const {isLoggedIn, setIsLoggedIn} = useContext(IsLoggedInContext);
 
     // @ts-ignore
     const {mutateAsync, isError, isLoading, isSuccess, error} =
-        useMutation(async (login: MyFormValues) => {
-                return await axios.post(`/auth/signin/`, login, {
-                    headers: {'Content-Type': 'application/json'},
-                    withCredentials: true
-                })
-            },
+        useMutation(async (login: ISignInForm) => axios.post(`/auth/signin/`, login),
             {
                 onSuccess: async (data, variables, context) => {
                     //@ts-ignore
-                    const dt = jwtDecode(data.data);
-                    //@ts-ignore
-                    const accessToken = data.data;
-                  //  console.log(data);
-                    // setAuth({user: dt});
+                    const refreshToken = data.data.refreshToken;
+                    await storage.saveRefreshToken(refreshToken);
+                    await refresh();
+                    setIsLoggedIn(true);
                 },
-                onError: async (error, variables, context) => {
-                    // await storageToken.deleteRefreshToken();
-                    // await storageToken.deleteToken();
-                    //  console.log(error1.response.data);
-                    //   console.log(error);
+                onError: async (error1, variables, context) => {
+                     await storage.deleteRefreshToken();
+                     setAuth({});
+                     setIsLoggedIn(false);
+                   //  console.error(error1.response.data.message);
                 }
             });
 
     useEffect(() => {
-    }, [auth]);
+    }, [isLoggedIn]);
 
     // @ts-ignore
     return (
@@ -84,7 +78,7 @@ const SignInScreen: React.FC<any> = (props) => {
                 {
                     isError && <Notification type={"danger"}>
                         {//@ts-ignore
-                                //  error.response.data.data.message
+                            //  error.response.data.message
                         }
                     </Notification>
 
@@ -95,8 +89,6 @@ const SignInScreen: React.FC<any> = (props) => {
                     initialValues={{username: '', password: ''}}
                     onSubmit={async values => {
                         try {
-                            console.log(values);
-
                             await mutateAsync({
                                 // @ts-ignore
                                 username: values.username.toString(),

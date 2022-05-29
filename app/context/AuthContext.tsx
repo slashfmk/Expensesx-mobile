@@ -6,11 +6,11 @@ const AuthContext = createContext({});
 
 export const AuthProvider: React.FC = ({children}) => {
 
-    const [auth, setAuth] = useState<IAuth | null>();
+    const [auth, setAuth] = useState();
     const authValue = useMemo(() => ({auth, setAuth}), [auth]);
     //@ts-ignore
     return (
-        <AuthContext.Provider value={authValue}>
+        <AuthContext.Provider value={{auth, setAuth}}>
             {children}
         </AuthContext.Provider>
     );

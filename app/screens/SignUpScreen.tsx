@@ -5,8 +5,7 @@ import {
     StatusBar,
     SafeAreaView,
     ImageBackground,
-    Platform,
-    ScrollView
+    Platform
 } from "react-native";
 import * as Constants from "../constants/appConstants";
 import AppButton from "../ui/AppButton";
@@ -17,22 +16,24 @@ import ActivityIndicator from "../ui/ActivityIndicator";
 import AppTextInput from "../ui/AppTextInput";
 import {Formik} from "formik";
 import AppText from "../ui/AppText";
-import * as Animatable from "react-native-animatable";
 import * as Yup from "yup";
 import axios from "../api/axios";
-import {baseUrlApi} from "../constants/genConstant";
-import AuthContext from "../context/AuthContext";
 
 
 const SignUpScreen: React.FC = (props: any) => {
 
     // @ts-ignore
-    const {mutateAsync, isLoading, error, isError} = useMutation(async (data) => await axios.post(`/auth/signup/`, data), {
+    const {
+        mutateAsync,
+        isLoading,
+        error,
+        isError
+    } = useMutation(async (data) => await axios.post(`/auth/signup/`, data), {
         onSuccess: async (data, variables, context) => {
-          //  console.log(data);
+            //  console.log(data);
         },
         onError: (error1, variables, context) => {
-           // console.log(error1);
+            // console.log(error1);
         }
     });
 
@@ -49,7 +50,7 @@ const SignUpScreen: React.FC = (props: any) => {
                 {
                     isError ? <AppText style={style.headingRed}>
                             {//@ts-ignore
-                              //  error.response.data.message
+                                //  error.response.data.message
                             }
                             There is an error
                         </AppText> :
@@ -85,9 +86,6 @@ const SignUpScreen: React.FC = (props: any) => {
                         } catch (e) {
                             console.log(e);
                         }
-
-
-                        //
                     }}
                 >
                     {({
@@ -141,25 +139,25 @@ const SignUpScreen: React.FC = (props: any) => {
                             <AppText style={style.errorInput}>{errors.username}</AppText>
 
                             {/*<View style={style.rowContainer}>*/}
-                                <AppTextInput
-                                    placeholder={'Password'}
-                                    onChangeText={handleChange('password')}
-                                    onBlur={handleBlur('password')}
-                                    name={"password"}
-                                    value={values.password}
-                                    secureTextEntry={true}
-                                />
-                                <AppText style={style.errorInput}>{errors.password}</AppText>
+                            <AppTextInput
+                                placeholder={'Password'}
+                                onChangeText={handleChange('password')}
+                                onBlur={handleBlur('password')}
+                                name={"password"}
+                                value={values.password}
+                                secureTextEntry={true}
+                            />
+                            <AppText style={style.errorInput}>{errors.password}</AppText>
 
-                                <AppTextInput
-                                    placeholder={'Repeat password'}
-                                    onChangeText={handleChange('rPassword')}
-                                    onBlur={handleBlur('rPassword')}
-                                    name={"rPassword"}
-                                    value={values.rPassword}
-                                    secureTextEntry={true}
-                                />
-                                <AppText style={style.errorInput}>{errors.rPassword}</AppText>
+                            <AppTextInput
+                                placeholder={'Repeat password'}
+                                onChangeText={handleChange('rPassword')}
+                                onBlur={handleBlur('rPassword')}
+                                name={"rPassword"}
+                                value={values.rPassword}
+                                secureTextEntry={true}
+                            />
+                            <AppText style={style.errorInput}>{errors.rPassword}</AppText>
 
                             {/*</View>*/}
 
@@ -177,9 +175,7 @@ const SignUpScreen: React.FC = (props: any) => {
                             <AppText onPress={() => props.navigation.navigate(navConstants.SIGN_IN)}
                                      style={style.subTitle}>
                                 Have an account? Sign In instead</AppText>
-
                             {/*   #### Form end*/}
-
 
                         </View>
                     )}

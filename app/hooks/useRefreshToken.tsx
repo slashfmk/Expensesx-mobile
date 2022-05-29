@@ -1,20 +1,33 @@
 
 import axios from "../api/axios";
 import useAuth from "./useAuth";
+import storage from "../utility/storage";
+import jwtDecode from "jwt-decode";
+// import useIsLoggedIn from "./useIsLoggedIn";
+import IsLoggedInContext from "../context/IsLoggedInContext";
+import {useContext} from "react";
+import AuthContext from "../context/AuthContext";
 
-const useRefreshToken =  () => {
-    const {setAuth} = useAuth();
+const  useRefreshToken =  () => {
+    //@ts-ignore
+    const {auth, setAuth} = useContext(AuthContext);
+    //@ts-ignore
+    const {isLoggedIn, setIsLoggedIn} = useContext(IsLoggedInContext);
 
     return async () => {
-        const response = await axios.get(`/auth/refresh/`, {
-            withCredentials: true
+        const refreshToken = await storage.getRefreshToken();
+        //  withCredentials: true,
+        const response = await axios.post(`/auth/refresh/`,  {
+            refreshToken: refreshToken
         });
         //@ts-ignore
-        setAuth(prev => {
-            console.log(JSON.stringify(prev));
-            console.log(response.data.accessToken);
-            return {...prev, accessToken: response.data.accessToken}
+        setAuth({
+            user: jwtDecode(response.data.accessToken),
+            accessToken: response.data.accessToken,
         });
+       // setIsLoggedIn(true);
+        console.log(auth);
+        console.log(isLoggedIn);
         return response.data.accessToken;
     };
 }
