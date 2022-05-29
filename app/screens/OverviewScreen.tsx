@@ -103,12 +103,8 @@ const OverviewScreen: React.FC = (props) => {
                     </View>
 
                     <View>
-                        {show && (
-                            <AppText>Morning {auth.firstname}</AppText>
-                        )}
-
+                        {show && (<AppText>Morning {auth.firstname}</AppText>)}
                     </View>
-
 
                     <Tag
                         //@ts-ignore
@@ -134,10 +130,9 @@ const OverviewScreen: React.FC = (props) => {
 
             <ScrollView style={style.container}>
                 <StatusBar translucent barStyle={"light-content"}/>
-                <SafeAreaView>
+                <View>
 
                     <View>
-
                         {
                             currentMonthTransactionList.isLoading ? <AppText>Loading ...</AppText>:
                                 <View style={[style.briefContainer]}>
@@ -237,7 +232,7 @@ const OverviewScreen: React.FC = (props) => {
                         </Block>
                     </View>
 
-                </SafeAreaView>
+                </View>
             </ScrollView>
 
             <PageActivityIndicator
@@ -290,7 +285,7 @@ const style = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        paddingTop: 30,
+        paddingTop: 2,
     },
     subContainer: {
         justifyContent: "center",
