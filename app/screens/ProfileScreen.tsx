@@ -20,7 +20,10 @@ import AuthContext from "../context/AuthContext";
 //import constantxs from '../constants/genConstant';
 
 import wordHelper from '../utility/wordHelper';
-
+import storage from "../utility/storage";
+import IsLoggedInContext from "../context/IsLoggedInContext";
+import {QueryObserverResult, useQuery} from "react-query";
+import useAxiosPrivate from "../hooks/useAxiosPrivate";
 
 const uLink: string = "https://images.unsplash.com/photo-1567303314286-6735a4ad9d42?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1603&q=80";
 
@@ -30,22 +33,28 @@ const ProfileScreen: React.FC = (props) => {
 
     const [loadFonts, setLoadFonts] = useState<boolean>(false);
     //@ts-ignore
-    const {auth, setAuthData} = useContext(AuthContext);
-
-    useEffect(() => {
-    }, [auth]);
-
-
-    // if (!loadFonts) {
-    //     return (
-    //         <AppLoading startAsync={useMyFont} onFinish={() => setLoadFonts(true)}/>
-    //     );
-    // }
+    const {auth, setAuth} = useContext(AuthContext);
+    //@ts-ignore
+    const {isLoggedIn, setIsLoggedIn} = useContext(IsLoggedInContext);
+    const axiosPrivate = useAxiosPrivate();
 
     const handleLogout = async () => {
-        // setAuthData(null);
-        // await storage.deleteToken();
+        try {
+            const refresh = await storage.getRefreshToken();
+            const response = await axiosPrivate.delete(`/auth/logout`, {data: {refreshToken: refresh}});
+            if(response.status === 200) {
+                await storage.deleteRefreshToken();
+                setIsLoggedIn(false);
+                setAuth({});
+            }
+        } catch (e) {
+            console.log(e);
+        }
     }
+
+    useEffect(() => {
+
+    }, [isLoggedIn]);
 
     // @ts-ignore
     return (
@@ -106,7 +115,7 @@ const ProfileScreen: React.FC = (props) => {
                         delay={100}
                         useNativeDriver
                     >
-                        <AppButton title={"Logout"} onPress={handleLogout}/>
+                        <AppButton title={"Logout"} onPress={() => handleLogout()}/>
                     </Animatable.View>
 
                 </View>

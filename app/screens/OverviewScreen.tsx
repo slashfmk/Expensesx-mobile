@@ -116,7 +116,7 @@ const OverviewScreen: React.FC = (props) => {
 
                 <View style={style.rowContainer}>
                     <View style={{justifyContent: "space-around", height: 50}}>
-                        <AppText>{"3000 spent today"}</AppText>
+                        <AppText>{wordHelper.AllFirstLetterToUpperCase(auth.user.firstname)}</AppText>
                         {/*<AppText>{"Status: Average"}</AppText>*/}
                     </View>
                     <View><AppText>{"Money usage"}</AppText></View>
